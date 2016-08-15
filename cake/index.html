@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>弹出框组件 overlay-1.0.0</title>
+<link rel="stylesheet" href="http://static.xinhuaapp.com/css/base.css">
+<style>
+.demo-overlay{
+  width: 560px;
+}
+.demo-overlay .header{
+  position: relative;
+  height: 30px;
+  line-height: 30px;
+  background: #000;
+  color: #fff;
+  font-family: "Microsoft YaHei";
+  padding: 0 10px;
+  font-size: 14px;
+}
+.demo-overlay .main{
+  padding: 5px;
+  background: #f0f0f0;
+}
+.demo-overlay .main img{
+  display: block;
+  width: 100%;
+}
+.demo-overlay .j-overlay-close{
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  text-align: center;
+  line-height: 16px;
+  right: 7px;
+  top: 7px;
+  color: #fff;
+  cursor: pointer;
+  font-family: Verdana;
+  font-size: 14px;
+}
+</style>
+</head>
+<body>
+<div id="j-overlay">
+  <div class="demo-overlay">
+    <div class="header">
+      弹出框内容
+      <span class="j-overlay-close">X</span>
+    </div>
+    <div class="main">
+      <img src="overlay.png">
+    </div>
+  </div>
+</div>
+<script charset="UTF-8" src="http://static.xinhuaapp.com/js/jquery-1.11.0-min.js"></script>
+<script charset="UTF-8" src="http://static.xinhuaapp.com/js/cake/overlay/overlay-1.0.0.js"></script>
+<script>
+var newOverlay = new cake['overlay-1.0.0']();
+$('#j-overlay').click(function(){
+  newOverlay.show($('#j-overlay').html());
+});
+</script>
+</body>
+</html>
