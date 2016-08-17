@@ -58,6 +58,32 @@ var formConfig = {
     "maxlength": 50,
     "placeholder": "可输入1-50个字"
   }, {
+    "title": "数字",
+    "name": "numberName",
+    "type": "number",
+    "required": true,
+    "min": 1,
+    "max": 1000,
+    "placeholder": "尾数必须为9的数字",
+    "pattern": "9$",
+    "value": "99"
+  }, {
+    "title": "手机号码",
+    "name": "phoneName",
+    "type": "tel",
+    "required": true,
+    "placeholder": "请输入你的手机号码",
+    "pattern":"^1\d{10}$",
+    "value": "170"
+  }, {
+    "title": "邮箱地址",
+    "name": "emailName",
+    "type": "email",
+    "required": true,
+    "placeholder": "请输入你的邮箱地址",
+    "pattern":"^(\w-*\.*)+@(\w-?)+(\.\w{2,})+$",
+    "value": "@163.com"
+  },{
     "title": "编辑器",
     "name": "editorContent",
     "type": "KindEditor",

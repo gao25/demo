@@ -20,12 +20,12 @@
           required = this['required'] ? '<em>*</em>' : '';
         _this.tplHtml += '<div class="inputbar'+inputbarClass+'">';
         _this.tplHtml += '<div class="barname">'+required+this['title']+'：</div>';
-        if (this['type'] == 'text' || this['type'] == 'textarea' || this['type'] == 'file') {
+        if (this['type'] == 'text' || this['type'] == 'textarea' || this['type'] == 'file'|| this['type'] == 'number' || this['type'] == 'tel' || this['type'] == 'email') {
           // text textarea
           if (this['type'] == 'textarea') {
             _this.tplHtml += '<textarea';
-          } else {
-            _this.tplHtml += '<input type="'+this['type']+'" class="text"';
+          } else{
+            _this.tplHtml += '<input type="'+this['type']+'" class="'+this['type']+'"';
             if (this['pattern']) _this.tplHtml += ' pattern="'+this['pattern']+'"';
             if (this['value']) _this.tplHtml += ' value="'+this['value']+'"';
           }
@@ -33,6 +33,7 @@
           if (this['required']) _this.tplHtml += ' required';
           if (this['placeholder']) _this.tplHtml += ' placeholder="'+this['placeholder']+'"';
           if (this['maxlength']) _this.tplHtml += ' maxlength="'+this['maxlength']+'"';
+          if (this['max']) _this.tplHtml += ' max="'+this['max']+'"';
           if (this['readonly']) _this.tplHtml += ' readonly';
           if (this['disabled']) _this.tplHtml += ' disabled';
           _this.tplHtml += '>';
