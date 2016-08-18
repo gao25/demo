@@ -25,10 +25,16 @@
           if (this['type'] == 'textarea') {
             _this.tplHtml += '<textarea';
           } else{
+            //phone
             if(this['type'] == 'phone'){
-              _this.tplHtml += '<input type="tel" class="'+this['type']+'"';
+              _this.tplHtml += '<input type="tel" class="'+this['type']+'" maxlength="11"';
             }else{
               _this.tplHtml += '<input type="'+this['type']+'" class="'+this['type']+'"';
+              //number
+              if(this['type'] == 'number'){
+                if (this['min']||this['min']===0) _this.tplHtml += 'min="'+this['min']+'"';
+                if (this['max']||this['min']===0) _this.tplHtml += ' max="'+this['max']+'"';
+              }
             }
             if (this['pattern']) _this.tplHtml += ' pattern="'+this['pattern']+'"';
             if (this['value']) _this.tplHtml += ' value="'+this['value']+'"';  
@@ -37,8 +43,6 @@
           if (this['required']) _this.tplHtml += ' required';
           if (this['placeholder']) _this.tplHtml += ' placeholder="'+this['placeholder']+'"';
           if (this['maxlength']) _this.tplHtml += ' maxlength="'+this['maxlength']+'"';
-          if (this['min']) _this.tplHtml += 'min="'+this['min']+'"';
-          if (this['max']) _this.tplHtml += ' max="'+this['max']+'"';
           if (this['readonly']) _this.tplHtml += ' readonly';
           if (this['disabled']) _this.tplHtml += ' disabled';
           _this.tplHtml += '>';
@@ -215,31 +219,27 @@
             return false;
           }
         }
-        //位数
-        if(field['type'] == 'phone'){
-          fieldObj.attr("maxlength","11");
-        }
         //大小
         if(field['type'] == 'number'){
           if(isNaN(val)){
             this.errtip(fieldObj,'请输入数字');
           }else{
-            if(field['min']|| field['min']==0 && field['max'] || field['max']==0 && field['min']<field['max']){
+            if((field['min'] || field['min']===0) && (field['max'] || field['max']===0) && field['min']<field['max']){
               if(val<field['min'] || val>field['max']){
                 this.errtip(fieldObj,field['title']+'大小必须大于等于'+field['min']+',小于等于'+field['max']);
                 return false;
               }
             }else{
-                if(field['min']||field['min'] ==0 && val<field['min']){
-                  this.errtip(fieldObj,field['title']+'大小必须大于等于'+field['min']);
-                  return false;
-                }
-                if(field['max']|| field['max']==0 && val>field['max']){
-                  this.errtip(fieldObj,field['title']+'大小必须小于等于'+field['max']);
-                  return false;
-                }
+              if((field['min'] || field['min']===0) && val<field['min']){
+                this.errtip(fieldObj,field['title']+'大小必须大于等于'+field['min']);
+                return false;
+              }
+              if((field['max'] || field['max']===0) && val>field['max']){
+                this.errtip(fieldObj,field['title']+'大小必须小于等于'+field['max']);
+                return false;
               }
             }
+          }
         }
         // 正则
         if (field['pattern']) {
