@@ -20,19 +20,24 @@
           required = this['required'] ? '<em>*</em>' : '';
         _this.tplHtml += '<div class="inputbar'+inputbarClass+'">';
         _this.tplHtml += '<div class="barname">'+required+this['title']+'：</div>';
-        if (this['type'] == 'text' || this['type'] == 'textarea' || this['type'] == 'file'|| this['type'] == 'number' || this['type'] == 'tel' || this['type'] == 'email') {
+        if (this['type'] == 'text' || this['type'] == 'textarea' || this['type'] == 'file'|| this['type'] == 'number' || this['type'] == 'phone' || this['type'] == 'email') {
           // text textarea
           if (this['type'] == 'textarea') {
             _this.tplHtml += '<textarea';
           } else{
-            _this.tplHtml += '<input type="'+this['type']+'" class="'+this['type']+'"';
+            if(this['type'] == 'phone'){
+              _this.tplHtml += '<input type="tel" class="'+this['type']+'"';
+            }else{
+              _this.tplHtml += '<input type="'+this['type']+'" class="'+this['type']+'"';
+            }
             if (this['pattern']) _this.tplHtml += ' pattern="'+this['pattern']+'"';
-            if (this['value']) _this.tplHtml += ' value="'+this['value']+'"';
+            if (this['value']) _this.tplHtml += ' value="'+this['value']+'"';  
           }
           _this.tplHtml += ' name="'+this['name']+'"';
           if (this['required']) _this.tplHtml += ' required';
           if (this['placeholder']) _this.tplHtml += ' placeholder="'+this['placeholder']+'"';
           if (this['maxlength']) _this.tplHtml += ' maxlength="'+this['maxlength']+'"';
+          if (this['min']) _this.tplHtml += 'min="'+this['min']+'"';
           if (this['max']) _this.tplHtml += ' max="'+this['max']+'"';
           if (this['readonly']) _this.tplHtml += ' readonly';
           if (this['disabled']) _this.tplHtml += ' disabled';
@@ -188,7 +193,7 @@
     },
     verify: function(fieldObj, field){
       var val = fieldObj.val();
-      if (field['type'] == 'text' || field['type'] == 'textarea') {
+      if (field['type'] == 'text' || field['type'] == 'textarea' || field['type'] == 'number' || field['type'] == 'phone' || field['type'] == 'email') {
         // 必填
         if (field['required'] && val == '') {
           this.errtip(fieldObj, '请输入'+field['title']);
@@ -208,6 +213,22 @@
           if (field['maxlength'] && val.length > field['maxlength']) {
             this.errtip(fieldObj, field['title']+'长度必须小于等于'+field['minlength']);
             return false;
+          }
+        }
+        //大小
+        if(field['min'] && field['max']){
+          if(val<field['min'] || val>field['max']){
+            this.errtip(fieldObj,field['title']+'大小必须大于等于'+field['min']+',小于等于'+field['max']);
+            return false;
+          }else{
+            if(field['min'] && val<field['min']){
+              this.errtip(fieldObj,field['title']+'大小必须大于等于'+field['min']);
+              return false;
+            }
+            if(field['max'] && val>field['max']){
+              this.errtip(fieldObj,field['title']+'大小必须小于等于'+field['max']);
+              return false;
+            }
           }
         }
         // 正则
