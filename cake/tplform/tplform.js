@@ -5,6 +5,11 @@
     } else {
       this.obj = $('#' + obj);
     }
+    this.pattern = {
+      number: '^\\d+(\\.\\d+)?$',
+      phone: '^1[3-8]\\d{9}$',
+      email: '^([a-zA-Z0-9_\\.\\-])+@(([a-zA-Z0-9\\-])+\\.)+([a-zA-Z0-9]{2,4})+$'
+    };
   };
   tplform.prototype = {
     initField: function(fields){
@@ -23,6 +28,7 @@
       });
     },
     tpltype: function(field){
+      var _this = this;
       var fieldType = {
         hidden: function(){
           var fieldHtml = '<input type="hidden" name="'+field['name']+'"';
@@ -36,18 +42,25 @@
           if (field['type'] == 'textarea') {
             fieldHtml += '<textarea';
           } else {
-            fieldHtml += '<input type="text"';
+            // 设置 input type
+            if (field['type'] == 'email') {
+              fieldHtml += '<input type="email"';
+            } else {
+              fieldHtml += '<input type="text"';
+            }
             if (field['type'] == 'phone') {
+              // 手机号码11位限制
               fieldHtml += ' maxlength="11"';
             } else {
               if (field['maxlength']) fieldHtml += ' maxlength="'+field['maxlength']+'"';
-              if (field['type'] == 'number') {
-                if (field['min'] || field['min'] === 0) fieldHtml += ' min="'+field['min']+'"';
-                if (field['max'] || field['min'] === 0) fieldHtml += ' max="'+field['max']+'"';
-              }
             }
             fieldHtml += ' class="'+field['type']+'"';
-            if (field['pattern']) fieldHtml += ' pattern="'+field['pattern']+'"';
+            if (_this.pattern[field['type']]) {
+              // 预设正则
+              fieldHtml += ' pattern="'+_this.pattern[field['type']]+'"';
+            } else {
+              if (field['pattern']) fieldHtml += ' pattern="'+field['pattern']+'"';
+            }
             if (field['value']) fieldHtml += ' value="'+field['value']+'"';
           }
           fieldHtml += ' name="'+field['name']+'"';
@@ -109,6 +122,12 @@
           });
           return fieldHtml;
         },
+        datetime: function(){
+          var fieldHtml = '<input type="text" class="'+field['type']+'" name="'+field['name']+'"';
+          if (field['value']) fieldHtml += ' value="'+field['value']+'"';
+          fieldHtml += '>';
+          return fieldHtml;
+        },
         KindEditor: function(){
           var fieldHtml = '<textarea name="'+field['name']+'">';
           if (field['value']) fieldHtml += field['value'];
@@ -159,18 +178,27 @@
         this.tplHtml = '<form id="'+this.formId+'">';
       } else {
         this.tplHtml = '<form id="'+this.formId+'" method="'+method+'" action="'+formConfig['action']+'"';
-        if (formConfig['target']) this.tplHtml += ' target="'+formConfig['target']+'"';
+        if (formConfig['target']) this.tplHtml += ' target="'+this.formId+'-iframe"';
         this.tplHtml += '>';
       }
       this.initField(fields);
       this.initButton(button);
       this.tplHtml += '</form>';
+      if (formConfig['type'] != 'ajax' && formConfig['target']) this.tplHtml += '<iframe name="'+this.formId+'-iframe" style="display:none;"></iframe>';
       this.obj.html(this.tplHtml);
 
-      // 遍历查看是否有编辑器
-      var editor = [];
+      // 遍历查看是否有 日期 或 编辑器
+      var editor = [],
+        datetimeConfig = {
+          format: 'Y-m-d H:i'
+        };
       $.each(fields, function(){
-        if (this['type'] == 'KindEditor') {
+        if (this['type'] == 'datetime') {
+          var config = {};
+          $.extend(config, datetimeConfig);
+          if (this['config']) $.extend(config, this['config']);
+          $('input[name="'+this['name']+'"]').datetimepicker(config);
+        } else if (this['type'] == 'KindEditor') {
           var config = this['config'] || {},
             newEditor = KindEditor.create('textarea[name="'+this['name']+'"]', config);
           editor.push(newEditor);
@@ -233,69 +261,63 @@
           this.errtip(fieldObj, '请输入'+field['title']);
           return false;
         }
-        // 长度
-        if (field['minlength'] && field['maxlength']) {
-          if (val.length < field['minlength'] || val.length > field['maxlength']) {
-            this.errtip(fieldObj, field['title']+'长度必须大于等于'+field['minlength']+'，小于等于'+field['maxlength']);
-            return false;
+        if (val != "") {
+          // 预设正则校验
+          if (type == 'number' || type == 'phone' || type == 'email') {
+            var newTypeRE = new RegExp(this.pattern[type]);
+            if (!newTypeRE.test(val)) {
+              this.errtip(fieldObj, '输入的格式不符合要求');
+              return false;
+            }
           }
-        } else {
-          if (field['minlength'] && val.length < field['minlength']) {
-            this.errtip(fieldObj, field['title']+'长度必须大于等于'+field['minlength']);
-            return false;
-          }
-          if (field['maxlength'] && val.length > field['maxlength']) {
-            this.errtip(fieldObj, field['title']+'长度必须小于等于'+field['minlength']);
-            return false;
-          }
-        }
-        //大小
-        if (field['type'] == 'number' && val) {
-          val = + val;
-          fieldObj.val(val);
-          if (isNaN(val)) {
-            this.errtip(fieldObj,'请输入数字');
-            return false;
+          // 长度
+          if (field['minlength'] && field['maxlength']) {
+            if (val.length < field['minlength'] || val.length > field['maxlength']) {
+              this.errtip(fieldObj, field['title']+'长度必须大于等于'+field['minlength']+'，小于等于'+field['maxlength']);
+              return false;
+            }
           } else {
-            if((field['min'] || field['min']===0) && (field['max'] || field['max']===0) && field['min']<field['max']){
-              if(val<field['min'] || val>field['max']){
-                this.errtip(fieldObj,field['title']+'大小必须大于等于'+field['min']+'，小于等于'+field['max']);
-                return false;
-              }
-            }else{
-              if((field['min'] || field['min']===0) && val<field['min']){
-                this.errtip(fieldObj,field['title']+'大小必须大于等于'+field['min']);
-                return false;
-              }
-              if((field['max'] || field['max']===0) && val>field['max']){
-                this.errtip(fieldObj,field['title']+'大小必须小于等于'+field['max']);
-                return false;
+            if (field['minlength'] && val.length < field['minlength']) {
+              this.errtip(fieldObj, field['title']+'长度必须大于等于'+field['minlength']);
+              return false;
+            }
+            if (field['maxlength'] && val.length > field['maxlength']) {
+              this.errtip(fieldObj, field['title']+'长度必须小于等于'+field['minlength']);
+              return false;
+            }
+          }
+          // number 大小
+          if (field['type'] == 'number') {
+            val = + val;
+            if (isNaN(val)) {
+              this.errtip(fieldObj, '请输入数字');
+              return false;
+            } else {
+              fieldObj.val(val);
+              if((field['min'] || field['min']===0) && (field['max'] || field['max']===0) && field['min']<field['max']){
+                if(val<field['min'] || val>field['max']){
+                  this.errtip(fieldObj,field['title']+'大小必须大于等于'+field['min']+'，小于等于'+field['max']);
+                  return false;
+                }
+              }else{
+                if((field['min'] || field['min']===0) && val<field['min']){
+                  this.errtip(fieldObj,field['title']+'大小必须大于等于'+field['min']);
+                  return false;
+                }
+                if((field['max'] || field['max']===0) && val>field['max']){
+                  this.errtip(fieldObj,field['title']+'大小必须小于等于'+field['max']);
+                  return false;
+                }
               }
             }
           }
-        }
-        //邮箱验证
-        if(field['type'] == 'email'){
-          var re=/^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/;
-          if(!re.test(val)){
-            this.errtip(fieldObj,'请输入有效的email地址');
-            return false;
-          }
-        }
-        //手机号码验证
-        if(field['type'] == 'phone'){
-          var re=/^1[3-8]\d{9}$/;
-          if(!re.test(val)){
-            this.errtip(fieldObj,'请输入有效的手机号码');
-            return false;
-          }
-        }
-        // 正则
-        if (field['pattern']) {
-          var newRE = new RegExp(field['pattern']);
-          if (!newRE.test(val)) {
-            this.errtip(fieldObj, '输入的格式不符合要求');
-            return false;
+          // 正则
+          if (field['pattern']) {
+            var newRE = new RegExp(field['pattern']);
+            if (!newRE.test(val)) {
+              this.errtip(fieldObj, '输入的格式不符合要求');
+              return false;
+            }
           }
         }
       }
@@ -312,7 +334,6 @@
           '<span style="color:#000;"></span></p>' +
           '</div>');
         errtipObj.css('margin-top', fieldObj.outerHeight()+7);
-        fieldObj.focus();
         fieldObj.click(function(){
           errtipObj.hide();
         }).blur(function(){
@@ -323,6 +344,7 @@
         });
         fieldObj.before(errtipObj);
       }
+      fieldObj.focus();
       errtipObj.find('span').html(msg);
       errtipObj.show();
       var errtipObjLeft = fieldObj.outerWidth() / 2 - 26;
