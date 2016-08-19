@@ -285,8 +285,7 @@
           }
         }
         //手机号码验证
-        if(field['type'] == 'phone' && val){
-          val = +val;
+        if(field['type'] == 'phone'){
           if(isNaN(val) || val.length<11){
             this.errtip(fieldObj,'请输入有效的手机号码');
             return false;
