@@ -11,65 +11,79 @@
       var _this = this;
       $.each(fields, function(){
         if (this['type'] == 'hidden') {
-          _this.tplHtml += '<input type="hidden" name="'+this['name']+'"';
-          if (this['value']) _this.tplHtml += ' value="'+this['value']+'"';
-          _this.tplHtml += '>';
-          return ;
+          _this.tplHtml += _this.tpltype(this);
+        } else {
+          var inputbarClass = this['class'] ? ' ' + this['class'] : '',
+            required = this['required'] ? '<em>*</em>' : '';
+          _this.tplHtml += '<div class="inputbar'+inputbarClass+'">';
+          _this.tplHtml += '<div class="barname">'+required+this['title']+'：</div>';
+          _this.tplHtml += _this.tpltype(this);
+          _this.tplHtml += '</div>';
         }
-        var inputbarClass = this['class'] ? ' ' + this['class'] : '',
-          required = this['required'] ? '<em>*</em>' : '';
-        _this.tplHtml += '<div class="inputbar'+inputbarClass+'">';
-        _this.tplHtml += '<div class="barname">'+required+this['title']+'：</div>';
-        if (this['type'] == 'text' || this['type'] == 'textarea' || this['type'] == 'file'|| this['type'] == 'number' || this['type'] == 'phone' || this['type'] == 'email') {
-          // text textarea
-          if (this['type'] == 'textarea') {
-            _this.tplHtml += '<textarea';
-          } else{
-            //phone
-            if(this['type'] == 'phone'){
-              _this.tplHtml += '<input type="tel" class="'+this['type']+'" maxlength="11"';
-            }else{
-              _this.tplHtml += '<input type="'+this['type']+'" class="'+this['type']+'"';
-              //number
-              if(this['type'] == 'number'){
-                if (this['min']||this['min']===0) _this.tplHtml += 'min="'+this['min']+'"';
-                if (this['max']||this['min']===0) _this.tplHtml += ' max="'+this['max']+'"';
+      });
+    },
+    tpltype: function(field){
+      var fieldType = {
+        hidden: function(){
+          var fieldHtml = '<input type="hidden" name="'+field['name']+'"';
+          if (field['value'] || field['value'] == 0) fieldHtml += ' value="'+field['value']+'"';
+          fieldHtml += '>';
+          return fieldHtml;
+        },
+        text: function(){
+          var fieldHtml = '';
+          // text textarea number phone email
+          if (field['type'] == 'textarea') {
+            fieldHtml += '<textarea';
+          } else {
+            if (field['type'] == 'phone') {
+              fieldHtml += '<input type="tel" maxlength="11"';
+            } else {
+              fieldHtml += '<input type="'+field['type']+'"';
+              if (field['maxlength']) fieldHtml += ' maxlength="'+field['maxlength']+'"';
+              if (field['type'] == 'number') {
+                if (field['min'] || field['min'] === 0) fieldHtml += ' min="'+field['min']+'"';
+                if (field['max'] || field['min'] === 0) fieldHtml += ' max="'+field['max']+'"';
               }
             }
-            if (this['pattern']) _this.tplHtml += ' pattern="'+this['pattern']+'"';
-            if (this['value']) _this.tplHtml += ' value="'+this['value']+'"';  
+            fieldHtml += ' class="'+field['type']+'"';
+            if (field['pattern']) fieldHtml += ' pattern="'+field['pattern']+'"';
+            if (field['value']) fieldHtml += ' value="'+field['value']+'"';
           }
-          _this.tplHtml += ' name="'+this['name']+'"';
-          if (this['required']) _this.tplHtml += ' required';
-          if (this['placeholder']) _this.tplHtml += ' placeholder="'+this['placeholder']+'"';
-          if (this['maxlength']) _this.tplHtml += ' maxlength="'+this['maxlength']+'"';
-          if (this['readonly']) _this.tplHtml += ' readonly';
-          if (this['disabled']) _this.tplHtml += ' disabled';
-          _this.tplHtml += '>';
-          if (this['type'] == 'textarea') {
-            if (this['value']) _this.tplHtml += this['value'];
-            _this.tplHtml += '</textarea>';
+          fieldHtml += ' name="'+field['name']+'"';
+          if (field['required']) fieldHtml += ' required';
+          if (field['placeholder']) fieldHtml += ' placeholder="'+field['placeholder']+'"';
+          if (field['readonly']) fieldHtml += ' readonly';
+          if (field['disabled']) fieldHtml += ' disabled';
+          fieldHtml += '>';
+          if (field['type'] == 'textarea') {
+            if (field['value']) fieldHtml += field['value'];
+            fieldHtml += '</textarea>';
           }
-        } else if (this['type'] == 'select') {
-          // select
-          _this.tplHtml += '<select name="'+this['name']+'"';
-          if (this['disabled']) _this.tplHtml += ' disabled';
-          _this.tplHtml += '>';
-          var selectVal = this['value'];
-          $.each(this['option'], function(){
-            _this.tplHtml += '<option value="'+this['value']+'"';
-            if (selectVal == this['value']) _this.tplHtml += ' selected';
-            _this.tplHtml += '>'+this['text']+'</option>';
+          return fieldHtml;
+        },
+        select: function(){
+          var fieldHtml = '<select name="'+field['name']+'"';
+          if (field['disabled']) fieldHtml += ' disabled';
+          fieldHtml += '>';
+          var selectVal = field['value'];
+          $.each(field['option'], function(){
+            fieldHtml += '<option value="'+this['value']+'"';
+            if (selectVal == this['value']) fieldHtml += ' selected';
+            fieldHtml += '>'+this['text']+'</option>';
           });
-          _this.tplHtml += '</select>';
-        } else if (this['type'] == 'radio' || this['type'] == 'checkbox') {
-          // radio checkbox
-          var boxType = this['type'],
-            boxName = this['name'],
-            boxValue = this['value'],
-            required = this['required'],
+          fieldHtml += '</select>';
+          return fieldHtml;
+        },
+        checkbox: function(){
+          var fieldHtml = '';
+          // checkbox radio
+          var boxType = field['type'],
+            boxName = field['name'],
+            boxValue = field['value'],
+            required = field['required'],
             boxDisabled = '';
-          if (this['disabled']) boxDisabled = ' disabled';
+          if (field['disabled']) boxDisabled = ' disabled';
           if (boxType == 'checkbox') {
             if (boxValue) {
               boxValue = boxValue.replace(/[\s]*,[\s]*/g, ',');
@@ -78,30 +92,45 @@
             }
             boxValue = ',' + boxValue + ',';
           }
-          $.each(this['option'], function(index){
-            _this.tplHtml += '<label><input type="'+boxType+'" name="'+boxName+'" value="'+this['value']+'"';
+          $.each(field['option'], function(index){
+            fieldHtml += '<label><input type="'+boxType+'" name="'+boxName+'" value="'+this['value']+'"';
             if (boxType == 'radio') {
               if (boxValue) {
                 // 如果有默认值 则被选中
-                if (boxValue == this['value']) _this.tplHtml += ' checked';
+                if (boxValue == this['value']) fieldHtml += ' checked';
               } else {
                 // 如果没有默认值 但此单选框必选，则第一项被选中
-                if (required && index == 0) _this.tplHtml += ' checked';
+                if (required && index == 0) fieldHtml += ' checked';
               }
             } else {
-              if (boxValue.indexOf(','+this['value']+',') > -1) _this.tplHtml += ' checked';
+              if (boxValue.indexOf(','+this['value']+',') > -1) fieldHtml += ' checked';
             }
-            _this.tplHtml += boxDisabled + '> '+this['text']+'</label>';
+            fieldHtml += boxDisabled + '> '+this['text']+'</label>';
           });
-        } else if (this['type'] == 'KindEditor') {
-          _this.tplHtml += '<textarea name="'+this['name']+'">';
-          if (this['value']) _this.tplHtml += this['value'];
-          _this.tplHtml += '</textarea>';
-        } else {
-          _this.tplHtml += this['html'];
+          return fieldHtml;
+        },
+        KindEditor: function(){
+          var fieldHtml = '<textarea name="'+field['name']+'">';
+          if (field['value']) fieldHtml += field['value'];
+          fieldHtml += '</textarea>';
+          return fieldHtml;
+        },
+        html: function(){
+          return field['html'];
         }
-        _this.tplHtml += '</div>';
-      });   
+      };
+      var type = field['type'];
+      if (type == 'text' || type == 'textarea' || type == 'number' || type == 'phone' || type == 'email') {
+        return fieldType['text']();
+      } else if (type == 'checkbox' || type == 'radio') {
+        return fieldType['checkbox']();
+      } else {
+        if (fieldType[type]) {
+          return fieldType[type]();
+        } else {
+          return '不支持此 type 类型';
+        }
+      }
     },
     initButton: function(button){
       var _this = this;
@@ -196,8 +225,10 @@
       if (callback) callback();
     },
     verify: function(fieldObj, field){
-      var val = fieldObj.val();
-      if (field['type'] == 'text' || field['type'] == 'textarea' || field['type'] == 'number' || field['type'] == 'phone' || field['type'] == 'email') {
+      var type = field['type'],
+        val = $.trim(fieldObj.val());
+      fieldObj.val(val);
+      if (type == 'text' || type == 'textarea' || type == 'number' || type == 'phone' || type == 'email') {
         // 必填
         if (field['required'] && val == '') {
           this.errtip(fieldObj, '请输入'+field['title']);
@@ -220,13 +251,15 @@
           }
         }
         //大小
-        if(field['type'] == 'number'){
-          if(isNaN(val)){
+        if (field['type'] == 'number' && val) {
+          val = + val;
+          fieldObj.val(val);
+          if (isNaN(val)) {
             this.errtip(fieldObj,'请输入数字');
-          }else{
+          } else {
             if((field['min'] || field['min']===0) && (field['max'] || field['max']===0) && field['min']<field['max']){
               if(val<field['min'] || val>field['max']){
-                this.errtip(fieldObj,field['title']+'大小必须大于等于'+field['min']+',小于等于'+field['max']);
+                this.errtip(fieldObj,field['title']+'大小必须大于等于'+field['min']+'，小于等于'+field['max']);
                 return false;
               }
             }else{
@@ -263,16 +296,21 @@
           '<span style="color:#000;"></span></p>' +
           '</div>');
         errtipObj.css('margin-top', fieldObj.outerHeight()+7);
-        fieldObj.before(errtipObj);
-        fieldObj.focus(function(){
+        fieldObj.focus();
+        fieldObj.click(function(){
+          errtipObj.hide();
+        }).blur(function(){
           errtipObj.hide();
         });
         errtipObj.click(function(){
           $(this).hide();
         });
+        fieldObj.before(errtipObj);
       }
       errtipObj.find('span').html(msg);
       errtipObj.show();
+      var errtipObjLeft = fieldObj.outerWidth() / 2 - 26;
+      errtipObj.css('margin-left', errtipObjLeft);
     },
     setval: function(data){
       var _this = this;
