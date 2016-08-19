@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>tplform v1.0.0</title>
+  <link rel="stylesheet" href="http://static.xinhuaapp.com/css/base.css" />
+  <link rel="stylesheet" href="datetimepicker.min.css"/ >
+  <link rel="stylesheet" href="../tplform.css" />
+  <script src="http://static.xinhuaapp.com/js/jquery-1.11.0-min.js"></script>
+</head>
+<body>
+<input id="datetimepicker" type="text" >
+<div id="j-tplform" class="demo-tplform"></div>
+<script src="/kindeditor/kindeditor-min.js"></script>
+<script src="datetimepicker.min.js"></script>
+<script src="../tplform.js"></script>
+<script>
+
+$('#datetimepicker').datetimepicker({
+  format: 'Y.m.d H:i',
+  step: 15,
+  minDate: 0
+});
+
+var formConfig = {
+  "type": "ajax",
+  "method": "post",
+  "action": "xxx",
+  "fields": [{
+    "title": "隐藏域",
+    "name": "id",
+    "type": "hidden",
+    "value": 0
+  }, {
+    "title": "文本",
+    "name": "title",
+    "type": "text",
+    "required": true,
+    "minlength": 4,
+    "maxlength": 100,
+    "placeholder": "4-100长度文本内容"
+  }, {
+    "title": "选择框",
+    "name": "selectName",
+    "type": "select",
+    "option": [
+      {"text": "内容1", "value": "v1"},
+      {"text": "内容2", "value": "v2"}
+    ]
+  }, {
+    "title": "单选框",
+    "name": "radioName",
+    "type": "radio",
+    "required": true,
+    "option": [
+      {"text": "单选1", "value": "v1"},
+      {"text": "单选2", "value": "v2"}
+    ]
+  }, {
+    "title": "多选框",
+    "name": "checkboxName",
+    "type": "checkbox",
+    "option": [
+      {"text": "多选1", "value": "v1"},
+      {"text": "多选2", "value": "v2"}
+    ]
+  }, {
+    "title": "多文本框",
+    "name": "textareaName",
+    "type": "textarea",
+    "required": true,
+    "minlength": 1,
+    "maxlength": 50,
+    "placeholder": "可输入1-50个字"
+  }, {
+    "title": "数字",
+    "name": "numberName",
+    "type": "number",
+    "required": true,
+    "min": 0,
+    "max": 1000,
+    "placeholder": "尾数必须为9的数字",
+    "pattern": "^.*9$",
+    "value": "98"
+  }, {
+    "title": "手机号码",
+    "name": "phoneName",
+    "type": "phone",
+    "required": true,
+    "placeholder": "请输入170号段的手机号码",
+    "pattern":"^170.*$",
+    "value": "170"
+  }, {
+    "title": "邮箱地址",
+    "name": "emailName",
+    "type": "email",
+    "required": true,
+    "placeholder": "请输入你的公司邮箱地址",
+    "pattern":"^.*@xinhuamm\\.net$",
+    "value": "yourname@xinhuamm.net"
+  },{
+    "title": "编辑器",
+    "name": "editorContent",
+    "type": "KindEditor",
+    "value": "kindEditor",
+    "config": {}
+  }, {
+    "title": "自定义",
+    "type": "html",
+    "html": "xxx"
+  }],
+  "button": [
+    {
+      "value": "确认保存",
+      "type": "submit"
+    }, {
+      "value": "取 消",
+      "type": "button",
+      "class": "cancel"
+    }
+  ]
+};
+
+/* 待完成
+  {
+    "title": "数字",
+    "name": "numberName",
+    "type": "number",
+    "required": true,
+    "min": 1,
+    "max": 1000,
+    "placeholder": "尾数必须为9的数字",
+    "pattern": "9$",
+    "value": "99"
+  }, {
+    "title": "手机号码",
+    "name": "phoneName",
+    "type": "phone",
+    "required": true,
+    "placeholder": "请输入你的手机号码",
+    "value": "170"
+  }, {
+    "title": "邮箱地址",
+    "name": "emailName",
+    "type": "email",
+    "required": true,
+    "placeholder": "请输入你的邮箱地址",
+    "value": "@163.com"
+  }, {
+    "title": "图片上传",
+    "name": "picName",
+    "type": "uppic",
+    "required": true,
+    "placeholder": "点击上传图片",
+    "value": "/pic.jpg"
+  }, {
+    "title": "图片群上传",
+    "name": "picsName",
+    "type": "uppics",
+    "required": true
+    "value": "/pic1.jpg, /pic2.jpg"
+  }, {
+    "title": "文件上传",
+    "name": "fileName",
+    "type": "upfile",
+    "required": true,
+    "placeholder": "点击上传文件",
+    "value": "/file.zip"
+  }
+*/
+
+
+var newTplform = new cake["tplform-1.0.0"]("j-tplform");
+newTplform.render(formConfig);
+
+// 设置值
+var fieldsVal = {
+  "title": "设置文本值"
+};
+newTplform.setval(fieldsVal);
+
+</script>
+</body>
+</html>
