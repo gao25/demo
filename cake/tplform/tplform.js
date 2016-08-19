@@ -122,24 +122,6 @@
           });
           return fieldHtml;
         },
-        datetime: function(){
-          var fieldHtml = '<input type="text" class="'+field['type']+'" name="'+field['name']+'"';
-          if (field['value']) fieldHtml += ' value="'+field['value']+'"';
-          fieldHtml += '>';
-          return fieldHtml;
-        },
-        date: function(){
-          var fieldHtml = '<input type="text" class="'+field['type']+'" name="'+field['name']+'"';
-          if (field['value']) fieldHtml += ' value="'+field['value']+'"';
-          fieldHtml += '>';
-          return fieldHtml;
-        },
-        time: function(){
-          var fieldHtml = '<input type="text" class="'+field['type']+'" name="'+field['name']+'"';
-          if (field['value']) fieldHtml += ' value="'+field['value']+'"';
-          fieldHtml += '>';
-          return fieldHtml;
-        },
         KindEditor: function(){
           var fieldHtml = '<textarea name="'+field['name']+'">';
           if (field['value']) fieldHtml += field['value'];
@@ -151,7 +133,7 @@
         }
       };
       var type = field['type'];
-      if (type == 'text' || type == 'textarea' || type == 'number' || type == 'phone' || type == 'email') {
+      if (type == 'text' || type == 'textarea' || type == 'number' || type == 'phone' || type == 'email' || type == 'datetime' || type == 'date' || type == 'time') {
         return fieldType['text']();
       } else if (type == 'checkbox' || type == 'radio') {
         return fieldType['checkbox']();
@@ -201,29 +183,26 @@
 
       // 遍历查看是否有 日期 或 编辑器
       var editor = [],
-        datetimeConfig = {},
-        config = {};
-      $.each(fields, function(){
-        if (this['type'] == 'datetime' || this['type'] == 'date' || this['type'] == 'time'){
-          if (this['type'] == 'datetime'){
-            datetimeConfig = {
+        datetimeConfig = {
+          "datetime": {
             format: 'Y-m-d H:i'
-            };
-          }else if(this['type'] == 'date'){
-            datetimeConfig={
-              timepicker:false,
-              format:'Y-m-d'
-            };  
-          }else if(this['type'] == 'time'){
-            datetimeConfig={
-              datepicker:false,
-              format:'H:i'
-            }; 
+          },
+          "date": {
+            timepicker: false,
+            format: 'Y-m-d'
+          },
+          "time": {
+            datepicker: false,
+            format: 'H:i'
           }
-          config=$.extend(config, datetimeConfig);
-          if (this['config']) config=$.extend(config, this['config']);
+        };
+      $.each(fields, function(){
+        if (this['type'] == 'datetime' || this['type'] == 'date' || this['type'] == 'time') {
+          var config = {};
+          $.extend(config, datetimeConfig[this['type']]);
+          if (this['config']) $.extend(config, this['config']);
           $('input[name="'+this['name']+'"]').datetimepicker(config);
-        }else if (this['type'] == 'KindEditor') {
+        } else if (this['type'] == 'KindEditor') {
           var config = this['config'] || {},
             newEditor = KindEditor.create('textarea[name="'+this['name']+'"]', config);
           editor.push(newEditor);
