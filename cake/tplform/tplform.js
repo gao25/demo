@@ -36,10 +36,10 @@
           if (field['type'] == 'textarea') {
             fieldHtml += '<textarea';
           } else {
+            fieldHtml += '<input type="text"';
             if (field['type'] == 'phone') {
-              fieldHtml += '<input type="tel" maxlength="11"';
+              fieldHtml += ' maxlength="11"';
             } else {
-              fieldHtml += '<input type="'+field['type']+'"';
               if (field['maxlength']) fieldHtml += ' maxlength="'+field['maxlength']+'"';
               if (field['type'] == 'number') {
                 if (field['min'] || field['min'] === 0) fieldHtml += ' min="'+field['min']+'"';
@@ -181,7 +181,6 @@
       } else if (editor.length == 1) {
         this.editor = editor[0];
       }
-
       // 绑定表单验证
       var _this = this;
       this.formObj = $('#'+this.formId);
@@ -255,7 +254,9 @@
           val = + val;
           fieldObj.val(val);
           if (isNaN(val)) {
+            console.log(val);
             this.errtip(fieldObj,'请输入数字');
+            return false;
           } else {
             if((field['min'] || field['min']===0) && (field['max'] || field['max']===0) && field['min']<field['max']){
               if(val<field['min'] || val>field['max']){
@@ -272,6 +273,23 @@
                 return false;
               }
             }
+          }
+        }
+        //邮箱验证
+        if(field['type'] == 'email'){
+          var atpos=val.indexOf('@');
+          var dotpos=val.lastIndexOf('.');
+          if(atpos<1 || dotpos<atpos+2 || dotpos+2>=val.length){
+            this.errtip(fieldObj,'请输入有效的email地址');
+            return false;
+          }
+        }
+        //手机号码验证
+        if(field['type'] == 'phone' && val){
+          val = +val;
+          if(isNaN(val) || val.length<11){
+            this.errtip(fieldObj,'请输入有效的手机号码');
+            return false;
           }
         }
         // 正则
