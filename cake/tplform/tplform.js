@@ -254,7 +254,6 @@
           val = + val;
           fieldObj.val(val);
           if (isNaN(val)) {
-            console.log(val);
             this.errtip(fieldObj,'请输入数字');
             return false;
           } else {
@@ -277,16 +276,16 @@
         }
         //邮箱验证
         if(field['type'] == 'email'){
-          var atpos=val.indexOf('@');
-          var dotpos=val.lastIndexOf('.');
-          if(atpos<1 || dotpos<atpos+2 || dotpos+2>=val.length){
+          var re=/^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/;
+          if(!re.test(val)){
             this.errtip(fieldObj,'请输入有效的email地址');
             return false;
           }
         }
         //手机号码验证
         if(field['type'] == 'phone'){
-          if(isNaN(val) || val.length<11){
+          var re=/^1[3-8]\d{9}$/;
+          if(!re.test(val)){
             this.errtip(fieldObj,'请输入有效的手机号码');
             return false;
           }
