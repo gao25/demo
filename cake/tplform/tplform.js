@@ -69,6 +69,13 @@
           if (field['readonly']) fieldHtml += ' readonly';
           if (field['disabled']) fieldHtml += ' disabled';
           fieldHtml += '>';
+          if(field['type'] == 'uppic' || field['type'] == 'uppics' || field['type'] == 'upfile'){
+            if(field['type'] == 'upfile'){
+              fieldHtml += '<input type="button" value="选择文件" id="'+field['type']+ '"/>';
+            }else{
+              fieldHtml += '<input type="button" value="选择图片" id="'+field['type']+ '"/>';
+            }
+          }
           if (field['type'] == 'textarea') {
             if (field['value']) fieldHtml += field['value'];
             fieldHtml += '</textarea>';
@@ -133,7 +140,7 @@
         }
       };
       var type = field['type'];
-      if (type == 'text' || type == 'textarea' || type == 'number' || type == 'phone' || type == 'email' || type == 'datetime' || type == 'date' || type == 'time') {
+      if (type == 'text' || type == 'textarea' || type == 'number' || type == 'phone' || type == 'email' || type == 'datetime' || type == 'date' || type == 'time' || type == 'uppic' || type == 'uppics' || type == 'upfile') {
         return fieldType['text']();
       } else if (type == 'checkbox' || type == 'radio') {
         return fieldType['checkbox']();
@@ -202,7 +209,7 @@
           $.extend(config, datetimeConfig[this['type']]);
           if (this['config']) $.extend(config, this['config']);
           $('input[name="'+this['name']+'"]').datetimepicker(config);
-        } else if (this['type'] == 'KindEditor') {
+        }else if (this['type'] == 'KindEditor') {
           var config = this['config'] || {},
             newEditor = KindEditor.create('textarea[name="'+this['name']+'"]', config);
           editor.push(newEditor);
@@ -213,6 +220,49 @@
       } else if (editor.length == 1) {
         this.editor = editor[0];
       }
+      //上传
+      KindEditor.ready(function(K){
+        var editor=K.editor({
+          allowFileManager:true
+        });
+        $.each(fields,function(){
+          if(this['type'] == 'upfile'){
+            K('#upfile').click(function(){
+              editor.loadPlugin('insertfile', function() {
+                editor.plugin.fileDialog({
+                  fileUrl : K('.upfile').val(),
+                  clickFn : function(url, title) {
+                    K('.upfile').val(url);
+                    editor.hideDialog();
+                  }
+                });
+              });
+            });
+          }
+          if(this['type'] == 'uppic'){
+            var _this=this;
+            K('#'+this['type']).click(function(){
+              editor.loadPlugin('image', function() {
+                editor.plugin.imageDialog({
+                  showLocal:_this['showLocal'],
+                  showRemote:_this['showRemote'],
+                  imageUrl : K('.'+_this['type']).val(),
+                  clickFn : function(url, title, width, height, border, align) {
+                    K('.'+_this['type']).val(url);
+                    editor.hideDialog();
+                  }
+                });
+                // if(_this['showLocal']||_this['showLocal'] == 'false'){
+                //   console.log(_this['showLocal']);
+                //   editor.plugin.imageDialog.showLocal=_this['showLocal'];
+                // }else if(_this['showRemote']||_this['showRemote'] == 'false'){
+                //   editor.plugin.imageDialog.showRemote=_this['showRemote'];
+                // }
+              });
+            });
+          }
+        })
+      })
       // 绑定表单验证
       var _this = this;
       this.formObj = $('#'+this.formId);

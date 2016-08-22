@@ -4,6 +4,7 @@
   <meta charset="utf-8">
   <title>tplform v1.0.0</title>
   <link rel="stylesheet" href="http://static.xinhuaapp.com/css/base.css" />
+  <link rel="stylesheet" href="/kindeditor/themes/default/default.css" />
   <link rel="stylesheet" href="tplform.css" />
   <link rel="stylesheet" href="datetimepicker.min.css" />
   <script src="http://static.xinhuaapp.com/js/jquery-1.11.0-min.js"></script>
@@ -11,6 +12,8 @@
 <body>
 <div id="j-tplform" class="demo-tplform"></div>
 <script src="/kindeditor/kindeditor-min.js"></script>
+<script src="/kindeditor/kindeditor.js"></script>
+<script src="/kindeditor/lang/zh_CN.js"></script>
 <script src="datetimepicker.min.js"></script>
 <script src="tplform.js"></script>
 <script>
@@ -117,6 +120,27 @@ var formConfig = {
     "config": {
       step: 15
     }
+  }, {
+    "title": "图片上传",
+    "name": "picName",
+    "type": "uppic",
+    "required": true,
+   // "showLocal":false,
+    "placeholder": "点击上传图片",
+    "value": "/pic.jpg"
+  }, {
+    "title": "图片群上传",
+    "name": "picsName",
+    "type": "uppics",
+    "required": true,
+    "value": "/pic1.jpg, /pic2.jpg"
+  }, {
+    "title": "文件上传",
+    "name": "fileName",
+    "type": "upfile",
+    "required": true,
+    "placeholder": "点击上传文件",
+    "value": "/file.zip"
   }, {
     "title": "编辑器",
     "name": "editorContent",
