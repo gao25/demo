@@ -69,14 +69,16 @@
           if (field['readonly']) fieldHtml += ' readonly';
           if (field['disabled']) fieldHtml += ' disabled';
           fieldHtml += '>';
-          if(field['type'] == 'uppic' || field['type'] == 'uppics' || field['type'] == 'upfile'){
-            if(field['type'] == 'upfile'){
-              fieldHtml += '<input type="button" value="选择文件" class="'+field['name']+ '"/>';
-            }else{
-              fieldHtml += '<input type="button" value="选择图片" class="'+field['name']+ '"/>';
+          if (field['type'] == 'uppic' || field['type'] == 'upfile') {
+            // 图片、文件上传
+            fieldHtml += '<input type="button" class="'+field['type']+'btn j-'+field['type']+'-'+field['name']+'" value="';
+            if (field['type'] == 'upfile') {
+              fieldHtml += '选择文件';
+            } else {
+              fieldHtml += '选择图片';
             }
-          }
-          if (field['type'] == 'textarea') {
+            fieldHtml += '" />';
+          } else if (field['type'] == 'textarea') {
             if (field['value']) fieldHtml += field['value'];
             fieldHtml += '</textarea>';
           }
@@ -140,7 +142,7 @@
         }
       };
       var type = field['type'];
-      if (type == 'text' || type == 'textarea' || type == 'number' || type == 'phone' || type == 'email' || type == 'datetime' || type == 'date' || type == 'time' || type == 'uppic' || type == 'uppics' || type == 'upfile') {
+      if (type == 'text' || type == 'textarea' || type == 'number' || type == 'phone' || type == 'email' || type == 'datetime' || type == 'date' || type == 'time' || type == 'uppic' || type == 'upfile') {
         return fieldType['text']();
       } else if (type == 'checkbox' || type == 'radio') {
         return fieldType['checkbox']();
@@ -188,7 +190,7 @@
       if (formConfig['type'] != 'ajax' && formConfig['target']) this.tplHtml += '<iframe name="'+this.formId+'-iframe" style="display:none;"></iframe>';
       this.obj.html(this.tplHtml);
 
-      // 遍历查看是否有 日期 或 编辑器
+      // 遍历查看是否有 日期 或 上传组件 或 编辑器
       var editor = [],
         datetimeConfig = {
           "datetime": {
@@ -202,14 +204,57 @@
             datepicker: false,
             format: 'H:i'
           }
-        };
+        },
+        upfileEditor = null; // 预留给上传组件
       $.each(fields, function(){
         if (this['type'] == 'datetime' || this['type'] == 'date' || this['type'] == 'time') {
+          // 日期时间
           var config = {};
           $.extend(config, datetimeConfig[this['type']]);
           if (this['config']) $.extend(config, this['config']);
           $('input[name="'+this['name']+'"]').datetimepicker(config);
-        }else if (this['type'] == 'KindEditor') {
+        } else if (this['type'] == 'uppic' || this['type'] == 'upfile') {
+          if (!upfileEditor) {
+            upfileEditor = KindEditor.editor({
+              allowFileManager: true
+            });
+          }
+          // 上传组件
+          if (this['type'] == 'uppic') {
+            // 上传图片
+            var config = {
+              imageUrl: $('input[name="'+this['name']+'"]').val(),
+              showLocal: true,
+              showRemote: true,
+              clickFn: function (url, title, width, height, border, align) {
+                $('input[name="'+this['name']+'"]').val(url);
+                upfileEditor.hideDialog();
+              }
+            };
+            $.extend(config, this['config']);
+            $('.j-'+this['type']+'-'+this['name']).click(function(){
+              upfileEditor.loadPlugin('image', function() {
+                upfileEditor.plugin.imageDialog(config);
+              });
+            });
+          } else {
+            // 上传文件
+            var config = {
+              fileUrl: $('input[name="'+this['name']+'"]').val(),
+              clickFn: function (url, title) {
+                $('input[name="'+this['name']+'"]').val(url);
+                upfileEditor.hideDialog();
+              }
+            };
+            $.extend(config, this['config']);
+            $('.j-'+this['type']+'-'+this['name']).click(function(){
+              upfileEditor.loadPlugin('insertfile', function() {
+                upfileEditor.plugin.fileDialog(config);
+              });
+            });
+          }
+        } else if (this['type'] == 'KindEditor') {
+          // 编辑器
           var config = this['config'] || {},
             newEditor = KindEditor.create('textarea[name="'+this['name']+'"]', config);
           editor.push(newEditor);
@@ -220,50 +265,7 @@
       } else if (editor.length == 1) {
         this.editor = editor[0];
       }
-      //上传
-      KindEditor.ready(function(K){
-        var editor=K.editor({
-          allowFileManager:true
-        });
-        $.each(fields,function(){
-          if(this['type'] == 'upfile'){
-            var _this=this;
-            K('.'+this['name']).click(function(){
-              editor.loadPlugin('insertfile', function() {
-                editor.plugin.fileDialog({
-                  fileUrl : K('.'+_this['type']).val(),
-                  clickFn : function(url, title) {
-                    K('.'+_this['type']).val(url);
-                    editor.hideDialog();
-                  }
-                });
-              });
-            });
-          }
-          if(this['type'] == 'uppic'){
-            var _this=this;
-            K('.'+this['name']).click(function(){
-              editor.loadPlugin('image', function() {
-                var showLocal=true,showRemote=true;
-                if(_this['config']){
-                  var showtab=_this['config']['showtab'];
-                  showRemote=(showtab=='local')?false:true;
-                  showLocal=(showtab=='remote')?false:true;
-                }
-                editor.plugin.imageDialog({
-                  imageUrl :K('.'+_this['type']).val(),
-                  showLocal: showLocal,
-                  showRemote:showRemote,
-                  clickFn : function(url, title, width, height, border, align) {
-                    K('.'+_this['type']).val(url);
-                    editor.hideDialog();
-                  }
-                });          
-              });
-            });
-          }
-        })
-      })
+
       // 绑定表单验证
       var _this = this;
       this.formObj = $('#'+this.formId);
@@ -306,12 +308,6 @@
       // callback
       if (callback) callback();
     },
-    // showstyle:function(fields){
-    //   if(fields['config']){
-    //     var showtab=$.trim(this['showtab'].val());
-
-    //   }
-    // }
     verify: function(fieldObj, field){
       var type = field['type'],
         val = $.trim(fieldObj.val());

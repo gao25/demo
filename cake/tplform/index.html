@@ -127,17 +127,8 @@ var formConfig = {
     "required": true,
     "placeholder": "点击上传图片",
     "value": "/pic.jpg",
-    "config":{
-      showtab:'local'
-    }
-  }, {
-    "title": "图片群上传",
-    "name": "picsName",
-    "type": "uppics",
-    "required": true,
-    "value": "/pic1.jpg, /pic2.jpg",
-    "config":{
-      showtab:'remote'
+    "config": {
+      "showRemote": false
     }
   }, {
     "title": "文件上传",
@@ -146,9 +137,7 @@ var formConfig = {
     "required": true,
     "placeholder": "点击上传文件",
     "value": "/file.zip",
-    "config":{
-      showtab:'local'
-    }
+    "config": {}
   }, {
     "title": "编辑器",
     "name": "editorContent",
