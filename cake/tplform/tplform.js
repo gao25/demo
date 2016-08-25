@@ -71,9 +71,9 @@
           fieldHtml += '>';
           if(field['type'] == 'uppic' || field['type'] == 'uppics' || field['type'] == 'upfile'){
             if(field['type'] == 'upfile'){
-              fieldHtml += '<input type="button" value="选择文件" id="'+field['type']+ '"/>';
+              fieldHtml += '<input type="button" value="选择文件" class="'+field['name']+ '"/>';
             }else{
-              fieldHtml += '<input type="button" value="选择图片" id="'+field['type']+ '"/>';
+              fieldHtml += '<input type="button" value="选择图片" class="'+field['name']+ '"/>';
             }
           }
           if (field['type'] == 'textarea') {
@@ -227,12 +227,13 @@
         });
         $.each(fields,function(){
           if(this['type'] == 'upfile'){
-            K('#upfile').click(function(){
+            var _this=this;
+            K('.'+this['name']).click(function(){
               editor.loadPlugin('insertfile', function() {
                 editor.plugin.fileDialog({
-                  fileUrl : K('.upfile').val(),
+                  fileUrl : K('.'+_this['type']).val(),
                   clickFn : function(url, title) {
-                    K('.upfile').val(url);
+                    K('.'+_this['type']).val(url);
                     editor.hideDialog();
                   }
                 });
@@ -241,23 +242,23 @@
           }
           if(this['type'] == 'uppic'){
             var _this=this;
-            K('#'+this['type']).click(function(){
+            K('.'+this['name']).click(function(){
               editor.loadPlugin('image', function() {
+                var showLocal=true,showRemote=true;
+                if(_this['config']){
+                  var showtab=_this['config']['showtab'];
+                  showRemote=(showtab=='local')?false:true;
+                  showLocal=(showtab=='remote')?false:true;
+                }
                 editor.plugin.imageDialog({
-                  showLocal:_this['showLocal'],
-                  showRemote:_this['showRemote'],
-                  imageUrl : K('.'+_this['type']).val(),
+                  imageUrl :K('.'+_this['type']).val(),
+                  showLocal: showLocal,
+                  showRemote:showRemote,
                   clickFn : function(url, title, width, height, border, align) {
                     K('.'+_this['type']).val(url);
                     editor.hideDialog();
                   }
-                });
-                // if(_this['showLocal']||_this['showLocal'] == 'false'){
-                //   console.log(_this['showLocal']);
-                //   editor.plugin.imageDialog.showLocal=_this['showLocal'];
-                // }else if(_this['showRemote']||_this['showRemote'] == 'false'){
-                //   editor.plugin.imageDialog.showRemote=_this['showRemote'];
-                // }
+                });          
               });
             });
           }
@@ -305,6 +306,12 @@
       // callback
       if (callback) callback();
     },
+    // showstyle:function(fields){
+    //   if(fields['config']){
+    //     var showtab=$.trim(this['showtab'].val());
+
+    //   }
+    // }
     verify: function(fieldObj, field){
       var type = field['type'],
         val = $.trim(fieldObj.val());

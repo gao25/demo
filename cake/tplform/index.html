@@ -125,22 +125,30 @@ var formConfig = {
     "name": "picName",
     "type": "uppic",
     "required": true,
-   // "showLocal":false,
     "placeholder": "点击上传图片",
-    "value": "/pic.jpg"
+    "value": "/pic.jpg",
+    "config":{
+      showtab:'local'
+    }
   }, {
     "title": "图片群上传",
     "name": "picsName",
     "type": "uppics",
     "required": true,
-    "value": "/pic1.jpg, /pic2.jpg"
+    "value": "/pic1.jpg, /pic2.jpg",
+    "config":{
+      showtab:'remote'
+    }
   }, {
     "title": "文件上传",
     "name": "fileName",
     "type": "upfile",
     "required": true,
     "placeholder": "点击上传文件",
-    "value": "/file.zip"
+    "value": "/file.zip",
+    "config":{
+      showtab:'local'
+    }
   }, {
     "title": "编辑器",
     "name": "editorContent",
