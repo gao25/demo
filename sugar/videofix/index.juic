@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>播放器小窗口组件</title>
+  <meta name="copyright" content="浙江新华移动传媒股份有限公司"/>
+  <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+  <meta name="format-detection" content="telephone=no" />
+  <link rel="stylesheet" href="http://static.xinhuaapp.com/css/mobase.css" />
+  <script src="http://static.xinhuaapp.com/js/zepto-1.1.6.min.js"></script>
+</head>
+<body>
+<div class="fn-contain">
+  <!-- Demo 内容 -->
+</div>
+<script src="http://static.xinhuaapp.com/js/sugar/base.js"></script>
+<script src="videofix.js"></script>
+<script>
+var newVidexfix = new videofix();
+</script>
+</body>
+</html>
