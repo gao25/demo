@@ -10,13 +10,17 @@
   <script src="http://static.xinhuaapp.com/js/zepto-1.1.6.min.js"></script>
 </head>
 <body>
-<div class="fn-contain">
+<div class="fn-contain" style="height:2000px">
   <!-- Demo 内容 -->
+  <div class='video'>
+    <video controls="controls" src="movie.ogg">
+  </div>
 </div>
 <script src="http://static.xinhuaapp.com/js/sugar/base.js"></script>
 <script src="videofix.js"></script>
 <script>
-var newVidexfix = new videofix();
+var newVideofix = new sugar['videofix-1.0.0']('70%','50%','left-center');
+newVideofix.init();
 </script>
 </body>
 </html>
