@@ -21,38 +21,14 @@
       var config={};
       //位置
       if(this.position){
-        if(this.position=='left-top'){
-          config={
-            'left':'0',
-            'top':'0'
-          }
-        }else if(this.position=='left-bottom'){
-          config={
-            'left':'0',
-            'bottom':'0'
-          }
-        }else if(this.position=='right-top'){
-          config={
-            'right':'0',
-            'top':'0'
-          }
-        }else if(this.position=='right-bottom'){
-          config={
-            'right':'0',
-            'bottom':'0'
-          }
-        }else if(this.position=='left-center'){
-          config={
-            'left':'0',
-            'top':'0',
-            'margin-top':(height-videoHeight)/2+'px'
-          }
-        }else if(this.position=='right-center'){
-          config={
-            'right':'0',
-            'top':'0',
-            'margin-top':(height-videoHeight)/2+'px'
-          }
+        var val=this.position;
+        var arr=val.split('-');
+        if(val=='left-top'||val=='left-bottom'||val=='right-top'||val=='right-bottom'){
+          config[arr[0]]=0;
+          config[arr[1]]=0;
+        }else if(val=='left-center'||val=='right-center'){
+          config[arr[0]]=0;
+          config['margin-top']=(height-videoHeight)/2+'px';
         }
       }
       setInterval(function(){
