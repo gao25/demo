@@ -20,32 +20,28 @@
     init: function(){
       // 获取播放器宽高
       this.videoWidth = this.videoObj.width();
-      this.videoHeight = this.videoObj.height();
-      console.log('videoWidth:'+this.videoWidth);
-      console.log('videoHeight:'+this.videoHeight);
+      this.videoHeight = this.videoObj.parent().height();
+      //获取可视窗口宽高
+      var width=window.innerWidth,
+          height=window.innerHeight;
       // 计算缩小后宽高
       if (this.config['width'].indexOf('%') > -1) {
-        console.log('fixWidth:'+this.videoWidth * parseInt(this.config['width']) / 100);
         this.fixVideoWidth = this.videoWidth * parseInt(this.config['width']) / 100;
       } else {
         this.fixVideoWidth = this.config['width'];
       }
       if (this.config['height'] != 'auto') {
         if (this.config['height'].indexOf('%') > -1) {
-          console.log('fixHeight:'+this.videoHeight *parseInt(this.config['height']) / 100);
-          this.fixVideoHeight = this.videoHeight * parseInt(this.config['height']) / 100;
+          this.fixVideoHeight = height * parseInt(this.config['height']) / 100;
         }else {
           this.fixVideoHeight = this.config['height'];
         }
       }else{
-        console.log('fixHeight:'+this.fixVideoHeight);
         this.fixVideoHeight = this.videoObj.height();
       }
       // 计算缩小后位置
       var _this=this;
       var config={};
-      var width=window.innerWidth,
-          height=window.innerHeight;
       if(this.config['position']!=''){
         var val=this.config['position'].split(' ');
         if(val[0]=='left'){
@@ -66,11 +62,10 @@
         }else{
           config['top']=val[1];
         }
-        console.log(config);
       }
       // 绑定滚动条
       $(document).scroll(function(){
-        if($('body').scrollTop()>=_this.videoHeight){
+        if($('body').scrollTop()>=_this.videoHeight){  
           var videofixCss=$.extend({'width':_this.config['width'],'height':_this.config['height'],'position':'fixed'},config);
           $(_this.videoObj).css(videofixCss);
         }else{
