@@ -7,20 +7,38 @@
   <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
   <meta name="format-detection" content="telephone=no" />
   <link rel="stylesheet" href="http://static.xinhuaapp.com/css/mobase.css" />
+  <style type="text/css">
+    .video{
+      height:15%;
+      position: relative;
+    }
+    video{
+      display: block;
+      width: 100%;
+      height: auto;
+      max-height:100%;
+    }
+  </style>
   <script src="http://static.xinhuaapp.com/js/zepto-1.1.6.min.js"></script>
 </head>
 <body>
 <div class="fn-contain" style="height:2000px">
   <!-- Demo 内容 -->
   <div class='video'>
-    <video controls="controls" src="movie.ogg">
+    <video id="j-video-wrap" autoplay src="movie.ogg"></video>
   </div>
 </div>
 <script src="http://static.xinhuaapp.com/js/sugar/base.js"></script>
 <script src="videofix.js"></script>
 <script>
-var newVideofix = new sugar['videofix-1.0.0']('70%','50%','left-center');
-newVideofix.init();
+$('.fn-contain').css('width',window.innerWidth);
+$('.video').css('width',window.innerWidth);
+var videofixConfig={
+  'width':'70%',
+  'height':'20%',
+  'position':'center'
+}
+var newVideofix = new sugar['videofix-1.0.0']('j-video-wrap', videofixConfig);
 </script>
 </body>
 </html>
